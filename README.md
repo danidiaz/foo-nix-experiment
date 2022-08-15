@@ -37,7 +37,7 @@ We can build it (including the outputs for `dist` and `dist-newstyle`) like this
 	/nix/store/9s8qjkk5hn9zv5wkn8905wl8ialdqjwi-foo-1.0.0.0-dist
 	/nix/store/fc0giacchzdnhk61i34ha0idpxga3lyy-foo-1.0.0.0-distNewstyle
 
-Now, try the following: edit `myderivation.nix`, uncomment the `preexistingDist` and `preexistingDistNewstyle` parameters, and make them point to the `dist` and `distNewstyle` generated in the previous `nix-build` invocation.
+Now, try the following: edit `myderivation.nix`, uncomment the `preexistingDist` and `preexistingDistNewstyle` parameters, and make them point to the `dist` and `distNewstyle` generated in the previous `nix-build` invocation. Then invoke `nix-build --no-out-link -A all` again.
 
 What should happen:
 
