@@ -8,9 +8,9 @@ There have been a number of attempts to this problem:
 - "recursive Nix" (in the future?)
 - ...
 
-I thought of trying the dumbest thing that could possibly work: what if `haskellPackages.mkDerivation` emitted Cabal's `dist` and `dist-newstyle` directories as secondary outputs, and it also allowed you to depend on these outputs, so that the build could begin with a prepopulated cache?
+I thought of trying the dumbest thing that could possibly work: what if `haskellPackages.mkDerivation` emitted Cabal's `dist` and `dist-newstyle` directories as secondary outputs, and also allowed you to depend on these outputs, so that the build could begin with a prepopulated cache?
 
-(If it worked, this solution would be highly stateful and require some annoying bookkeeping. But let's leave that aside and focus on if it can be made to work.)
+(Admittedly, if it worked, this solution would be highly stateful and require some annoying bookkeeping. But let's leave that concern aside and focus on if it can be made to work.)
 
 I have [forked Nixpkgs](https://github.com/danidiaz/nixpkgs) and, in the [`haskell_avoid_recomp_experiment`](https://github.com/danidiaz/nixpkgs/tree/haskell_avoid_recomp_experiment) branch, I made [this commit](https://github.com/danidiaz/nixpkgs/commit/73801a39f303a4d59394a09b8adda49a52bd832c) which adds a new function [`mkDerivationSpecial`](https://github.com/danidiaz/nixpkgs/blob/73801a39f303a4d59394a09b8adda49a52bd832c/pkgs/development/haskell-modules/make-package-set.nix#L99) to `haskellPackages`.
 
@@ -23,13 +23,13 @@ I have [forked Nixpkgs](https://github.com/danidiaz/nixpkgs) and, in the [`haske
 
 ## What about this repo?
 
-This repo exists to test if this approach works. It constains a very simple Cabal project. Along with some Nix code to build it.
+This repo exists to test if this approach works. It constains a very simple Cabal project, along with some Nix code to build it.
 
-You should edit the `default.nix` and point it to a clone of the above mentioned fork of Nixpkgs (branch `haskell_avoid_recomp_experiment`).
+You should edit the `default.nix` file and point it to a clone of the above mentioned fork of Nixpkgs (branch `haskell_avoid_recomp_experiment`).
 
-If you look at the derivation in `myderivation.nix`, you'll see that it uses `mkDerivationSpecial`.
+If you look at the derivation in the `myderivation.nix` file, you'll see that it uses `mkDerivationSpecial`.
 
-We can build it (including the outputs for `dist` and `dist-newstyle` like this:
+We can build it (including the outputs for `dist` and `dist-newstyle`) like this:
 
     $ nix-build --no-out-link -A all
 	/nix/store/ks9i6640sxymv4iknra1bgr5v23nhqmr-foo-1.0.0.0
@@ -37,7 +37,7 @@ We can build it (including the outputs for `dist` and `dist-newstyle` like this:
 	/nix/store/9s8qjkk5hn9zv5wkn8905wl8ialdqjwi-foo-1.0.0.0-dist
 	/nix/store/fc0giacchzdnhk61i34ha0idpxga3lyy-foo-1.0.0.0-distNewstyle
 
-Now, try the following: edit  `myderivation.nix`, uncomment the `preexistingDist` and `preexistingDistNewstyle` parameters, and make them point to the `dist` and `distNewstyle` generated in the previous `nix-build` invocation.
+Now, try the following: edit `myderivation.nix`, uncomment the `preexistingDist` and `preexistingDistNewstyle` parameters, and make them point to the `dist` and `distNewstyle` generated in the previous `nix-build` invocation.
 
 What should happen:
 
